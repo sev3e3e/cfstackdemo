@@ -1,0 +1,13 @@
+{
+  "name": "@cfstackdemo/types",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.ts",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "npx tsc"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

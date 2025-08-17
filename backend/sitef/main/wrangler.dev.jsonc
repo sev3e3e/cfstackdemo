@@ -1,0 +1,47 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cfstackdemo-sitef-main",
+	"main": "src/index.dev.ts",
+	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_date": "2025-07-11",
+	"observability": {
+		"enabled": true
+	},
+	"queues": { "consumers": [{ "queue": "cfstackdemo-scraping-queue", "max_batch_size": 1 }] },
+	"services": [
+		{ "binding": "MainR2Worker", "service": "cfstackdemo-main-r2" },
+		{ "binding": "MainD1Worker", "service": "cfstackdemo-main-d1" },
+		{ "binding": "SitefFetcher", "service": "cfstackdemo-sitef-fetcher" }
+	],
+	"vars": {
+		"ENVIRONMENT": "development"
+	},
+	"env": {
+		"example": {
+			"vars": {
+				"ENVIRONMENT": "example"
+			},
+			"queues": { "consumers": [{ "queue": "cfstackdemo-scraping-queue", "max_batch_size": 1 }] },
+			"services": [
+				{ "binding": "MainR2Worker", "service": "cfstackdemo-main-r2" },
+				{ "binding": "MainD1Worker", "service": "cfstackdemo-main-d1" },
+				{ "binding": "SitefFetcher", "service": "cfstackdemo-sitef-fetcher" }
+			]
+		},
+		"test": {
+			"vars": {
+				"ENVIRONMENT": "test"
+			},
+			"queues": { "consumers": [{ "queue": "cfstackdemo-scraping-queue", "max_batch_size": 1 }] },
+			"services": [
+				{ "binding": "MainR2Worker", "service": "cfstackdemo-main-r2" },
+				{ "binding": "MainD1Worker", "service": "cfstackdemo-main-d1" },
+				{ "binding": "SitefFetcher", "service": "cfstackdemo-sitef-fetcher" }
+			]
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"name": "@cfstackdemo/jwt-worker",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"deploy": "wrangler deploy --minify -e production --keep-vars",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest --watch=false",
+		"cf-typegen": "wrangler types",
+		"db:gen": "drizzle-kit generate",
+		"db:mig-local": "wrangler d1 migrations apply cfstackdemo-jwt-d1 --local",
+		"db:mig": "wrangler d1 migrations apply cfstackdemo-jwt-d1 --remote"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "catalog:",
+		"drizzle-kit": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"wrangler": "catalog:"
+	},
+	"dependencies": {
+		"@cfstackdemo/lightweight-otel-sdk": "workspace:*",
+		"@cfstackdemo/logger": "workspace:*",
+		"@cfstackdemo/utility": "workspace:*",
+		"drizzle-orm": "catalog:",
+		"neverthrow": "catalog:"
+	}
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@cfstackdemo/gcp-request-relay",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "b": "tsup src/index.ts",
+    "deploy:function": "gcloud functions deploy cfstackdemo-relay-0 --gen2 --runtime=nodejs20 --trigger-http --region asia-northeast1 --entry-point relay --no-allow-unauthenticated"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "description": "",
+  "dependencies": {
+    "@google-cloud/functions-framework": "4.0.0",
+    "jwt-decode": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "5.8.2"
+  }
+}

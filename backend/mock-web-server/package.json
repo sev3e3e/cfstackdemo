@@ -1,0 +1,15 @@
+{
+  "name": "@cfstackdemo/mock-web-server",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify -e production --keep-vars",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "hono": "^4.8.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.4.0"
+  }
+}

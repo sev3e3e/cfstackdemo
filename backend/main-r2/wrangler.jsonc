@@ -1,0 +1,45 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cfstackdemo-main-r2",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-07-12",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true
+	},
+	"r2_buckets": [{ "binding": "HistoryR2", "bucket_name": "cfstackdemo-history-r2" }],
+	"vars": {
+		"ENVIRONMENT": "development"
+	},
+	"env": {
+		"staging": {
+			"vars": {
+				"ENVIRONMENT": "staging"
+			},
+			"r2_buckets": [{ "binding": "HistoryR2", "bucket_name": "cfstackdemo-history-r2" }]
+		},
+		"production": {
+			"name": "cfstackdemo-main-r2",
+			"vars": {
+				"ENVIRONMENT": "production"
+			},
+			"r2_buckets": [{ "binding": "HistoryR2", "bucket_name": "cfstackdemo-history-r2" }]
+		},
+		"example": {
+			"vars": {
+				"ENVIRONMENT": "example"
+			},
+			"r2_buckets": [{ "binding": "HistoryR2", "bucket_name": "cfstackdemo-history-r2" }]
+		},
+		"test": {
+			"vars": {
+				"ENVIRONMENT": "test"
+			},
+			"r2_buckets": [{ "binding": "HistoryR2", "bucket_name": "cfstackdemo-history-r2" }]
+		}
+	}
+}

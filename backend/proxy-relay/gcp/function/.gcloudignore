@@ -1,0 +1,6 @@
+# .gloudignore
+.gcloudignore
+.git
+.gitignore
+src/**
+tsconfig.json

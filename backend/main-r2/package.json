@@ -1,0 +1,28 @@
+{
+	"name": "@cfstackdemo/main-r2",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"deploy": "wrangler deploy -e production --minify --keep-vars",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest --watch=false",
+		"cf-typegen": "wrangler types"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "catalog:",
+		"@cfstackdemo/types": "workspace:*",
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"wrangler": "catalog:"
+	},
+	"dependencies": {
+		"@cfstackdemo/lightweight-otel-sdk": "workspace:*",
+		"@cfstackdemo/logger": "workspace:*",
+		"@cfstackdemo/utility": "workspace:*",
+		"neverthrow": "catalog:"
+	}
+}

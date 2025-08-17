@@ -1,0 +1,29 @@
+{
+	"name": "@cfstackdemo/lightweight-otel-sdk",
+	"version": "0.0.0",
+	"main": "index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./const": "./src/consts/index.ts"
+	},
+	"types": "./src/index.ts",
+	"scripts": {
+		"format": "prettier --ignore-unknown --write .",
+		"check:format": "prettier . --check --ignore-unknown",
+		"check:types": "tsc --noEmit",
+		"watch": "tsc --watch",
+		"test": "vitest --watch=false",
+		"test:dev": "vitest",
+		"build": "tsc --build"
+	},
+	"devDependencies": {
+		"neverthrow": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"license": "UNLICENSED",
+	"packageManager": "pnpm@10.3.0",
+	"dependencies": {
+		"@cfstackdemo/utility": "workspace:*"
+	}
+}

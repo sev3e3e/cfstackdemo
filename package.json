@@ -1,0 +1,28 @@
+{
+  "name": "@cfstackdemo/root",
+  "version": "0.0.0",
+  "description": "ola!",
+  "scripts": {
+    "test:all": "pnpm --filter \"*\" test",
+    "dev": "pnpm --filter \"*\" dev:example",
+    "deploy:all": "pnpm --filter \"*\" run deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.13.1",
+  "devDependencies": {
+    "@cfstackdemo/types": "workspace:*",
+    "@cloudflare/vitest-pool-workers": "catalog:",
+    "@cloudflare/workers-types": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:",
+    "npm-run-all2": "catalog:"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

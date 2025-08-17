@@ -1,0 +1,22 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cfstackdemo-sitef-entrypoint",
+	"main": "src/index.prod.ts",
+	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_date": "2025-07-11",
+	"observability": {
+		"enabled": true
+	},
+	"triggers": {
+		"crons": ["0 */2 * * *"]
+	},
+	"queues": { "producers": [{ "binding": "DemoScrapingQueue", "queue": "cfstackdemo-scraping-queue" }] },
+	"services": [{ "binding": "SitefFetcher", "service": "cfstackdemo-sitef-fetcher" }],
+	"vars": {
+		"ENVIRONMENT": "production"
+	}
+}

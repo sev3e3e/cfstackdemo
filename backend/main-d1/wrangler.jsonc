@@ -1,0 +1,85 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cfstackdemo-main-d1",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-07-12",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "MainD1",
+			"database_name": "cfstackdemo-main-d1",
+			"database_id": "e5d02710-51ef-47c9-8610-40667c56574b",
+			"migrations_dir": "./drizzle/",
+			"migrations_table": "d1_migrations"
+		}
+	],
+	"vars": {
+		"ENVIRONMENT": "development"
+	},
+	"env": {
+		"staging": {
+			"vars": {
+				"ENVIRONMENT": "staging"
+			},
+			"d1_databases": [
+				{
+					"binding": "MainD1",
+					"database_name": "cfstackdemo-main-d1",
+					"database_id": "e5d02710-51ef-47c9-8610-40667c56574b",
+					"migrations_dir": "./drizzle/",
+					"migrations_table": "d1_migrations"
+				}
+			]
+		},
+		"production": {
+			"name": "cfstackdemo-main-d1",
+			"vars": {
+				"ENVIRONMENT": "production"
+			},
+			"d1_databases": [
+				{
+					"binding": "MainD1",
+					"database_name": "cfstackdemo-main-d1",
+					"database_id": "e5d02710-51ef-47c9-8610-40667c56574b",
+					"migrations_dir": "./drizzle/",
+					"migrations_table": "d1_migrations"
+				}
+			]
+		},
+		"example": {
+			"vars": {
+				"ENVIRONMENT": "example"
+			},
+			"d1_databases": [
+				{
+					"binding": "MainD1",
+					"database_name": "cfstackdemo-main-d1",
+					"database_id": "e5d02710-51ef-47c9-8610-40667c56574b",
+					"migrations_dir": "./drizzle/",
+					"migrations_table": "d1_migrations"
+				}
+			]
+		},
+		"test": {
+			"vars": {
+				"ENVIRONMENT": "test"
+			},
+			"d1_databases": [
+				{
+					"binding": "MainD1",
+					"database_name": "cfstackdemo-main-d1",
+					"database_id": "e5d02710-51ef-47c9-8610-40667c56574b",
+					"migrations_dir": "./drizzle/",
+					"migrations_table": "d1_migrations"
+				}
+			]
+		}
+	}
+}

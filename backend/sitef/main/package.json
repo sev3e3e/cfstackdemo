@@ -1,0 +1,32 @@
+{
+	"name": "@cfstackdemo/sitef-main",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy -c ./wrangler.prod.jsonc --minify --keep-vars",
+		"dev": "wrangler dev -c ./wrangler.dev.jsonc",
+		"start": "wrangler dev",
+		"test": "vitest --watch=false",
+		"cf-typegen": "wrangler types",
+		"analyze": "wrangler deploy -c ./wrangler.prod.jsonc -e production --minify --dry-run --metafile=./meta.json && pnpm esbuild-visualizer --metadata ./meta.json && powershell.exe start stats.html"
+	},
+	"devDependencies": {
+		"@cfstackdemo/types": "workspace:*",
+		"@cloudflare/vitest-pool-workers": "catalog:",
+		"@cloudflare/workers-types": "catalog:",
+		"esbuild-visualizer": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"wrangler": "catalog:"
+	},
+	"dependencies": {
+		"@cfstackdemo/lightweight-otel-sdk": "workspace:*",
+		"@cfstackdemo/logger": "workspace:*",
+		"@cfstackdemo/main-d1": "workspace:*",
+		"@cfstackdemo/main-r2": "workspace:*",
+		"@cfstackdemo/sitef-fetcher": "workspace:*",
+		"@cfstackdemo/sitef-scraper": "workspace:*",
+		"@cfstackdemo/utility": "workspace:*",
+		"neverthrow": "catalog:"
+	}
+}

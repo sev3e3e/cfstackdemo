@@ -1,0 +1,7 @@
+flowchart TD
+  UA[User Access]
+  FE["@cfstackdemo/frontend<br/>Cloudflare Pages w/ SvelteKit"]
+
+  UA --> FE
+  FE <--> d1Wrapper["@cfstackdemo/main-d1<br/>D1 Wrapper Worker"]
+  FE <--> r2Wrapper["@cfstackdemo/main-r2<br/>R2 Wrapper Worker"]

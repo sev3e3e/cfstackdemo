@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cfstackdemo-mock-web-server",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-07-10",
+  "vars": {
+    "ENVIRONMENT": "development"
+  },
+  "env": {
+    "production": {
+      "name": "cfstackdemo-mock-web-server",
+      "vars": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  }
+}

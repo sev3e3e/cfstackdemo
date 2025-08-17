@@ -1,0 +1,29 @@
+{
+	"name": "@cfstackdemo/sitef-fetcher",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy --minify -e production --keep-vars",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest --watch=false",
+		"cf-typegen": "wrangler types"
+	},
+	"exports": {
+		".": "./src/index.ts",
+		"./interfaces": "./src/interfaces/index.ts"
+	},
+	"devDependencies": {
+		"@cfstackdemo/jwt-worker": "workspace:*",
+		"@cfstackdemo/types": "workspace:*",
+		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"@types/node": "^24.1.0",
+		"typescript": "^5.5.2",
+		"vitest": "~3.2.0",
+		"wrangler": "^4.28.1"
+	},
+	"dependencies": {
+		"@cfstackdemo/logger": "workspace:*",
+		"neverthrow": "catalog:"
+	}
+}

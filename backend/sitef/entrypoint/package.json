@@ -1,0 +1,35 @@
+{
+	"name": "@cfstackdemo/sitef-entrypoint",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy -c ./wrangler.prod.jsonc --minify --keep-vars",
+		"dev": "wrangler dev -c ./wrangler.dev.jsonc",
+		"dev:example": "wrangler dev -c ./wrangler.dev.jsonc -c ../main/wrangler.dev.jsonc -c ../../main-r2/wrangler.example.jsonc -c ../../main-d1/wrangler.example.jsonc -c ../../proxy-relay/gcp/cf-jwt-worker/wrangler.jsonc -c ../fetcher/wrangler.jsonc  --test-scheduled",
+		"dev:q": "wrangler dev -c ./wrangler.dev.jsonc -c ../main/wrangler.dev.jsonc -c ../../main-r2/wrangler.jsonc -c ../../main-d1/wrangler.jsonc  -c ../../proxy-relay/gcp/cf-jwt-worker/wrangler.jsonc -c ../fetcher/wrangler.jsonc --test-scheduled -e example",
+		"devq:prod": "wrangler dev -c ./wrangler.prod.jsonc -c ../main/wrangler.prod.jsonc -c ../../main-r2/wrangler.jsonc -c ../../main-d1/wrangler.jsonc -c ../../proxy-relay/gcp/cf-jwt-worker/wrangler.jsonc -c ../fetcher/wrangler.jsonc  --test-scheduled",
+		"start": "wrangler dev",
+		"test": "vitest --watch=false",
+		"cf-typegen": "wrangler types",
+		"analyze": "wrangler deploy --minify -c ./wrangler.prod.jsonc --dry-run --metafile=./meta.json && pnpm esbuild-visualizer --metadata ./meta.json && powershell.exe start stats.html"
+	},
+	"devDependencies": {
+		"@cfstackdemo/sitef-fetcher": "workspace:*",
+		"@cfstackdemo/types": "workspace:*",
+		"@cloudflare/vitest-pool-workers": "catalog:",
+		"@cloudflare/workers-types": "catalog:",
+		"@faker-js/faker": "^9.9.0",
+		"@opentelemetry/api-logs": "^0.203.0",
+		"cross-env": "^10.0.0",
+		"esbuild-visualizer": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:",
+		"wrangler": "catalog:"
+	},
+	"dependencies": {
+		"@cfstackdemo/lightweight-otel-sdk": "workspace:*",
+		"@cfstackdemo/logger": "workspace:*",
+		"@cfstackdemo/utility": "workspace:*",
+		"neverthrow": "catalog:"
+	}
+}

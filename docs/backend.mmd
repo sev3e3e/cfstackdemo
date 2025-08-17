@@ -1,0 +1,29 @@
+flowchart TD
+  subgraph cron["Scheduled Site Worker<br/>Cron Triggered"]
+    entrypoint["@cfstackdemo/sitef-entrypoint<br/>cron起点"]
+    fetcher["@cfstackdemo/fetcher<br/>proxy経由でsale情報取得"]
+    main["@cfstackdemo/sitef-main<br/>html/api取得と解析・保存制御"]
+    scraper["@cfstackdemo/sitef-scraper<br/>HTML Scraper"]
+  end
+
+  entrypoint --> fetcher
+  entrypoint --> main
+  main --> scraper
+  main --> fetcher
+
+  main --> d1Wrapper["@cfstackdemo/main-d1<br/>D1 Wrapper Worker"] --> d1[Cloudflare D1]
+  main --> r2Wrapper["@cfstackdemo/main-r2<br/>R2 Wrapper Worker"] --> r2[Cloudflare R2]
+
+  cfWrapper["@cfstackdemo/http-relay-worker<br/>Proxy Wrapper CF Worker"]
+  mockServer["@cfstackdemo/mock-web-server<br/>Demo Target Server"]
+
+  subgraph GCP
+    gcpProxy["@cfstackdemo/gcp-request-relay<br/>GCP Proxy"]
+  end
+
+  fetcher --> cfWrapper --> gcpProxy --> mockServer
+
+  subgraph observability["Observability"]
+    otel["@ctstackdemo/lightweight-otel-sdk<br/><br/>Otel Tracing独自SDK"]
+    logger["@cfstackdemo/logger<br/>独自Logger"]
+  end
