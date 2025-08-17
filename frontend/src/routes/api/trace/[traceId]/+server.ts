@@ -1,37 +1,46 @@
 import { fetchEventsByMessage } from "$lib/axiom";
-import api from "../../../../api.json";
 
 export async function GET({ params, platform }) {
-  // const traceId = params.traceId;
+  // UGLY: but....
+  if (!platform?.env.AXIOM_ORG_ID || !platform?.env.AXIOM_API_TOKEN) {
+    console.warn(
+      "Axiom org id or Axiom API Token is not provided, use mocked datas."
+    );
 
-  // const aplQuery = `['cfstackdemo-trace'] | where trace_id =~ '${traceId}'`;
+    const api = (await import("../../../../mockedData/api.json")).default;
 
-  // const rows = await fetchEventsByMessage(
-  //   { token: platform?.env.AXIOM_API_TOKEN },
-  //   { apl: aplQuery }
-  // );
+    return new Response(JSON.stringify(api));
+  }
 
-  // const cleanedResults = rows.map(removeNulls);
+  const traceId = params.traceId;
 
-  // // log
-  // const logQuery = `['cfstackdemo-log'] | where ['fields.traceId'] =~ '${traceId}'`;
+  const aplQuery = `['cfstackdemo-trace'] | where trace_id =~ '${traceId}'`;
 
-  // const logRows = await fetchEventsByMessage(
-  //   { token: platform?.env.AXIOM_API_TOKEN },
-  //   { apl: logQuery }
-  // );
-  // const logData = logRows.map(removeNulls);
+  const rows = await fetchEventsByMessage(
+    { token: platform?.env.AXIOM_API_TOKEN },
+    { apl: aplQuery }
+  );
 
-  // return new Response(
-  //   JSON.stringify({
-  //     trace: cleanedResults,
-  //     log: logData,
-  //   }),
-  //   {
-  //     headers: { "Content-Type": "application/json" },
-  //   }
-  // );
-  return new Response(JSON.stringify(api));
+  const cleanedResults = rows.map(removeNulls);
+
+  // log
+  const logQuery = `['cfstackdemo-log'] | where ['fields.traceId'] =~ '${traceId}'`;
+
+  const logRows = await fetchEventsByMessage(
+    { token: platform?.env.AXIOM_API_TOKEN },
+    { apl: logQuery }
+  );
+  const logData = logRows.map(removeNulls);
+
+  return new Response(
+    JSON.stringify({
+      trace: cleanedResults,
+      log: logData,
+    }),
+    {
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
 
 function removeNulls(obj: any): any {

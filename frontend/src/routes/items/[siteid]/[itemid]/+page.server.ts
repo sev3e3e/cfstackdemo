@@ -5,7 +5,8 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 
   const item = await platform?.env?.MainD1Worker.getItem(
     Number(siteid),
-    itemid
+    itemid,
+    platform?.env.ENVIRONMENT
   );
   return {
     item: item,

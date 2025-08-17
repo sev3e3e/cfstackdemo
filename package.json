@@ -5,7 +5,9 @@
   "scripts": {
     "test:all": "pnpm --filter \"*\" test",
     "dev": "pnpm --filter \"*\" dev:example",
-    "deploy:all": "pnpm --filter \"*\" run deploy"
+    "deploy:all": "pnpm --filter \"*\" run deploy",
+    "dev:backend": "pnpm --filter '@cfstackdemo/sitef-entrypoint' dev:q",
+    "dev:frontend": "pnpm --filter '@cfstackdemo/frontend' dev"
   },
   "keywords": [],
   "author": "",
