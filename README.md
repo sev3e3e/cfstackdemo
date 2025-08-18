@@ -1,26 +1,48 @@
 # cfstackdemo – Cloudflareエコシステムで構築したフルスタックデモアプリ
 
-Cloudflare Workers / D1 / R2 / Queue /  Pages / GCP CloudRun で構成されたデモアプリ。
+外部サイトのデータをScrapingし保存, 表示するデモアプリ。
 
-frontend: https://hoge.com  
+##  deployed URL
 
-## 特徴
+https://hoge.com 
 
-- CloudflareとGCPによるフルスタック構成
-- 合計12packagesによるmonorepo構成
-- OpenTelemetry導入によるedge環境での観測性の確保
+## 使用言語
 
-## アーキテクチャ概要
+Typescript
+
+## 使用インフラサービス
+
+### Frontend
+
+- Cloudflare Worker
+
+### Backend
+
+- Cloudflare
+    - Worker
+    - Queue
+    - D1
+    - R2
+
+- GCP CloudRun
+
+## 使用ライブラリ/FW
+
+### Frontend
+
+- Svelte5
+- Sveltekit
+
+### Backend
+
+- hono
+- DrizzleOrm / kit
+- OpenTelemetry
+- Vitest
+
+## Architecture diaglams
 
 ![Frontend](./docs/frontend.mmd)
 
 ![Backend](./docs/backend.mmd)
 
-## 使用技術
-
-- Cloudflare Workers (バックエンド)
-- Cloudflare Queue (Worker間通信)
-- Cloudflare D1 / R2 (DB, ストレージ)
-- Svelte5 + SvelteKit (フロントエンド)
-- GCP Cloud Run (外部Proxy)
-- OpenTelemetry SDK(独自実装), Logger
