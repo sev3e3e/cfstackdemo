@@ -27,19 +27,26 @@ export default class extends WorkerEntrypoint<Env> {
 			case 'development':
 			case 'example':
 			default:
-				return new RelaySitefFetcher(
-					new ConsoleLogger(),
-					fetch.bind(globalThis),
-					this.env.JWTService.getOrCreateJWT,
-					this.env.GCP_DEPLOYED_RELAY_ENDPOINT
-				);
+				const mockApiEndpoint = 'http://localhost:9999';
+				return new RelaySitefFetcher(new ConsoleLogger(), fetch.bind(globalThis), this.env.JWTService.getOrCreateJWT, {
+					proxy: this.env.GCP_DEPLOYED_RELAY_ENDPOINT,
+					detail: `${mockApiEndpoint}/sitef/item/detail`,
+					hiddenSale: `${mockApiEndpoint}/sitef/hidden-sale-api`,
+					item: `${mockApiEndpoint}/sitef/api/item`,
+				});
 
 			case 'production':
+				const apiEndpoint = 'https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev';
 				return new RelaySitefFetcher(
 					createAxiomLogger({ dataset: this.env.AXIOM_LOG_DATASET, token: this.env.AXIOM_API_TOKEN }),
 					fetch.bind(globalThis),
 					this.env.JWTService.getOrCreateJWT,
-					this.env.GCP_DEPLOYED_RELAY_ENDPOINT
+					{
+						proxy: this.env.GCP_DEPLOYED_RELAY_ENDPOINT,
+						detail: `${apiEndpoint}/sitef/item/detail`,
+						hiddenSale: `${apiEndpoint}/sitef/hidden-sale-api`,
+						item: `${apiEndpoint}/sitef/api/item`,
+					}
 				);
 		}
 	}

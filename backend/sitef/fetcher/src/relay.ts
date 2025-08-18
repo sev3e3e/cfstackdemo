@@ -19,7 +19,12 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 			  }
 			| undefined
 		>,
-		private proxyEndpoint: string
+		private endpoint: {
+			proxy: string;
+			hiddenSale: string;
+			item: string;
+			detail: string;
+		}
 	) {
 		super();
 	}
@@ -34,13 +39,14 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 		const { parentSpanId, traceId } = otelContext;
 		const logger = this.logger.with({ traceId, worker: 'sitef-fetcher' });
 		const startTime = Date.now();
-		const targetUrl = `https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev/sitef/hidden-sale-api?count=${count}`;
+		// const targetUrl = `https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev/sitef/hidden-sale-api?count=${count}`;
+		const targetUrl = `${this.endpoint.hiddenSale}?count=${count}`;
 
 		logger.info('relayfetcher.sitef.relay.api.hidden_sale.start', {
 			targetUrl: targetUrl,
 			method: 'GET',
 			count,
-			relayEndpoint: this.proxyEndpoint,
+			relayEndpoint: this.endpoint.proxy,
 		});
 
 		logger.info('relayfetcher.sitef.relay.jwt.start', {
@@ -56,7 +62,7 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 		}
 
 		const result = await ResultAsync.fromPromise(
-			this._fetch(this.proxyEndpoint, {
+			this._fetch(this.endpoint.proxy, {
 				method: 'POST',
 				body: JSON.stringify({ url: targetUrl, method: 'GET' }),
 				headers: {
@@ -111,7 +117,8 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 		const logger = this.logger.with({ traceId, worker: 'sitef-fetcher' });
 
 		const startTime = Date.now();
-		const targetUrl = 'https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev/sitef/api/item';
+		// const targetUrl = 'https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev/sitef/api/item';
+		const targetUrl = this.endpoint.item;
 
 		logger.info('relayfetcher.sitef.api.item.start', { keyword: props.keyword });
 
@@ -132,7 +139,7 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 		const fullUrl = `${targetUrl}?${queryParams.toString()}`;
 
 		const result = await ResultAsync.fromPromise(
-			this._fetch(this.proxyEndpoint, {
+			this._fetch(this.endpoint.proxy, {
 				method: 'POST',
 				body: JSON.stringify({
 					url: fullUrl,
@@ -184,7 +191,9 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 
 		const logger = this.logger.with({ traceId, worker: 'sitef-fetcher' });
 
-		const targetUrl = 'https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev/sitef/item/detail';
+		// const targetUrl = 'https://cfstackdemo-mock-web-server.ripfirem-cloudflare.workers.dev/sitef/item/detail';
+		const targetUrl = this.endpoint.detail;
+
 		const jwt = await this.getOrCreateJwt(traceId, parentSpanId);
 
 		if (!jwt) {
@@ -193,7 +202,7 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 		}
 
 		const result = await ResultAsync.fromPromise(
-			this._fetch(this.proxyEndpoint, {
+			this._fetch(this.endpoint.proxy, {
 				method: 'POST',
 				body: JSON.stringify({
 					url: targetUrl,
