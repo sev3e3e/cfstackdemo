@@ -4,6 +4,7 @@ import { RelaySitefFetcher } from './relay';
 import type { Environment } from '@cfstackdemo/types';
 import { DirectSitefFetcher } from './direct';
 import { Env } from '../worker-configuration';
+import mockedGetOrCreateJWT from './mock/getOrCreateJWT';
 
 export default class extends WorkerEntrypoint<Env> {
 	async fetch(): Promise<Response> {
@@ -28,8 +29,12 @@ export default class extends WorkerEntrypoint<Env> {
 			case 'example':
 			default:
 				const mockApiEndpoint = 'http://localhost:9999';
-				return new RelaySitefFetcher(new ConsoleLogger(), fetch.bind(globalThis), this.env.JWTService.getOrCreateJWT, {
-					proxy: this.env.GCP_DEPLOYED_RELAY_ENDPOINT,
+				const proxyEndpoint = 'http://localhost:9998';
+
+				const getMockedJWT = mockedGetOrCreateJWT;
+
+				return new RelaySitefFetcher(new ConsoleLogger(), fetch.bind(globalThis), getMockedJWT, {
+					proxy: proxyEndpoint,
 					detail: `${mockApiEndpoint}/sitef/item/detail`,
 					hiddenSale: `${mockApiEndpoint}/sitef/hidden-sale-api`,
 					item: `${mockApiEndpoint}/sitef/api/item`,

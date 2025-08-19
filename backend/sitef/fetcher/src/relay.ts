@@ -46,6 +46,7 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 			targetUrl: targetUrl,
 			method: 'GET',
 			count,
+			proxy: this.endpoint.proxy,
 			relayEndpoint: this.endpoint.proxy,
 		});
 
@@ -72,6 +73,7 @@ export class RelaySitefFetcher extends RpcTarget implements SitefFetcherLike {
 			}),
 			(e) => {
 				logger.error('relayfetcher.sitef.api.hidden_sale.error', {
+					proxy: this.endpoint.proxy,
 					targetUrl: targetUrl,
 					error: e,
 					duration: Date.now() - startTime,

@@ -5,6 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "b": "tsup src/index.ts",
+    "dev": "functions-framework --source=./src/index.ts --target=relay --port=9998",
     "deploy:function": "gcloud functions deploy cfstackdemo-relay-0 --gen2 --runtime=nodejs20 --trigger-http --region asia-northeast1 --entry-point relay --no-allow-unauthenticated"
   },
   "author": "",
