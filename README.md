@@ -4,7 +4,7 @@
 
 ※実際のWebサイトではなくMocked Web ServerからFetch/Scrapingしています。
 
-frontend: https://hoge.com
+frontend: https://cfstackdemo-frontend.ripfirem-cloudflare.workers.dev/
 
 ## 特徴
 
