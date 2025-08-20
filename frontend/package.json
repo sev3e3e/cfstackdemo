@@ -17,7 +17,7 @@
     "delay2": "delay 2",
     "_start:r2": "wrangler dev -c ../backend/main-r2/wrangler.jsonc -e example",
     "start:r2": "run-s delay1 _start:r2",
-    "start:frontend": "run-s delay2 dev:frontend",
+    "start:frontend": "run-s delay2 dev",
     "_dev": "concurrently 'pnpm run start:r2' 'pnpm run start:d1' 'pnpm run start:frontend'"
   },
   "devDependencies": {
