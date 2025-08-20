@@ -14,10 +14,25 @@
   "observability": {
     "enabled": true
   },
+  "vars": {
+    "ENVIRONMENT": "example"
+  },
   "services": [
     { "binding": "MainR2Worker", "service": "cfstackdemo-main-r2" },
     { "binding": "MainD1Worker", "service": "cfstackdemo-main-d1" }
-  ]
+  ],
+  "env": {
+    "production": {
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
+      "services": [
+        { "binding": "MainR2Worker", "service": "cfstackdemo-main-r2" },
+        { "binding": "MainD1Worker", "service": "cfstackdemo-main-d1" }
+      ]
+    }
+  }
+
   /**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

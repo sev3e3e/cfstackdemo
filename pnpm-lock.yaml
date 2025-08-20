@@ -449,6 +449,12 @@ importers:
       '@axiomhq/js':
         specifier: 1.3.1
         version: 1.3.1
+      '@cfstackdemo/main-d1':
+        specifier: workspace:*
+        version: link:../backend/main-d1
+      '@cfstackdemo/main-r2':
+        specifier: workspace:*
+        version: link:../backend/main-r2
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3

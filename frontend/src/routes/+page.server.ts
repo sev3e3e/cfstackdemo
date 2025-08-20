@@ -5,6 +5,23 @@ import type { PageServerLoad } from "./$types";
 import { fetchEventsByMessage } from "$lib/axiom";
 
 export const load: PageServerLoad = async ({ platform }) => {
+  // UGLY: but....
+  if (!platform?.env.AXIOM_ORG_ID || !platform?.env.AXIOM_API_TOKEN) {
+    console.warn(
+      "Axiom org id or Axiom API Token is not provided, use mocked datas."
+    );
+
+    const data = (await import("../mockedData/api.json")).default;
+    const traceHistoryData = (await import("../mockedData/tracehistory.json"))
+      .default;
+
+    return {
+      traceData: data.trace,
+      logData: data.log,
+      traceHistoryData: traceHistoryData.data,
+    };
+  }
+
   const traceHistoryQuery = `['cfstackdemo-trace'] | where (['service.name'] =~ 'sitef-entrypoint' and name =~ 'sitef entrypoint') | take 10 | sort by _time | project trace_id, _time`;
 
   const traceHistoryRows = await fetchEventsByMessage(

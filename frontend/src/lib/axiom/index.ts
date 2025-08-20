@@ -112,22 +112,3 @@ export async function fetchEventsByMessage(
   const json = (await res.json()) as TabularResponse;
   return tabularToRows(json);
 }
-
-/** 使い方例 */
-async function example() {
-  const rows = await fetchEventsByMessage(
-    { domain: "api.axiom.co", token: process.env.AXIOM_TOKEN! },
-    {
-      dataset: "my-logs",
-      message: "proxy.fetch.start",
-      // 任意で期間・limit・投影フィールドを指定可能
-      // start: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      // end: new Date(),
-      // limit: 200,
-      // selectFields: ['_time', 'message', 'status', 'uri'],
-    }
-  );
-
-  // rows は「行オブジェクト配列」。必要に応じて処理する。
-  console.log(rows);
-}
