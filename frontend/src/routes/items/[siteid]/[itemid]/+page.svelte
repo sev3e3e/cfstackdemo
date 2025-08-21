@@ -5,6 +5,10 @@
   import * as Avatar from "$lib/components/ui/avatar/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
 
+  import { ArrowLeft } from "@lucide/svelte";
+
+  export let data: PageData;
+  $: item = data.item;
   export let data: PageData;
   $: item = data.item;
 
@@ -20,15 +24,14 @@
       return "Unknown date";
     }
   }
-
-  function getStarRating(rating: number): string {
-    const stars =
-      "".repeat(Math.floor(rating)) + "".repeat(5 - Math.floor(rating));
-    return stars;
-  }
 </script>
 
 <svelte:head>
+  <title>{item?.title || "Item Details"} - Demo Site</title>
+  <meta
+    name="description"
+    content={item?.description || "View detailed information about this item"}
+  />
   <title>{item?.title || "Item Details"} - Demo Site</title>
   <meta
     name="description"
@@ -41,39 +44,38 @@
     <!-- Back navigation -->
     <div class="mb-6">
       <Button variant="outline" size="sm" onclick={() => history.back()}>
-        ê Back to Items
+        <ArrowLeft />Back to Items
       </Button>
     </div>
 
     <!-- Main item details -->
     <Card.Root class="mb-8">
-      <Card.Header class="">
-        <div class="flex items-start md:gap-6 gap-4 min-w-0">
-          <div class="flex-1 min-w-0">
+      <Card.Header>
+        <div class="flex items-start gap-6">
+          <div class="flex-1">
             <Card.Title
               class="text-2xl font-bold text-gray-900 dark:text-white mb-2"
             >
               {item.title}
             </Card.Title>
             <Card.Description
-              class="text-gray-600 dark:text-gray-400 text-base "
+              class="text-gray-600 dark:text-gray-400 text-base"
             >
               {item.description || "No description available"}
             </Card.Description>
 
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
+            <div class="flex items-center gap-3 mt-4">
               <Badge variant="secondary">
                 Site ID: {item.siteId}
               </Badge>
-              <!-- 340px????? -->
-              <Badge variant="outline" class="text-xs">
+              <Badge variant="outline">
                 ID: {item.siteSpecificId}
               </Badge>
             </div>
           </div>
 
           {#if item.thumbUrl}
-            <Avatar.Root class="w-20 h-20 shrink-0">
+            <Avatar.Root class="w-24 h-24">
               <Avatar.Image src={item.thumbUrl} alt={item.title} />
               <Avatar.Fallback class="text-lg">
                 {item.title.slice(0, 2).toUpperCase()}
@@ -88,13 +90,18 @@
           <!-- Rating and Reviews Summary -->
           {#if item.avgRating !== null}
             <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1">
+                <span class="text-lg"
+                  ><svg viewBox="0 0 100 100" width="22" height="22">
+                    <polygon
+                      points="50,5 61,39 98,39 67,59 78,93 50,72 22,93 33,59 2,39 39,39"
+                      fill="gold"
+                    />
+                  </svg>
+                </span>
                 <span class="text-2xl font-bold text-gray-900 dark:text-white">
                   {item.avgRating.toFixed(1)}
                 </span>
-                <div class="flex items-center text-yellow-500">
-                  <span class="text-lg">{getStarRating(item.avgRating)}</span>
-                </div>
               </div>
               {#if item.reviewCount !== null}
                 <Badge variant="outline" class="text-sm">
@@ -119,7 +126,67 @@
         </div>
       </Card.Content>
     </Card.Root>
+          <!-- External Link -->
+          <div>
+            <Button
+              variant="default"
+              size="lg"
+              onclick={() => window.open(item.url, "_blank")}
+              class="w-full sm:w-auto"
+            >
+              View Original Item
+            </Button>
+          </div>
+        </div>
+      </Card.Content>
+    </Card.Root>
 
+    <!-- Samples Section -->
+    {#if item.samples && item.samples.length > 0}
+      <Card.Root class="mb-8">
+        <Card.Header>
+          <Card.Title
+            class="text-xl font-semibold text-gray-900 dark:text-white"
+          >
+            Samples ({item.samples.length})
+          </Card.Title>
+          <Card.Description>Available samples for this item</Card.Description>
+        </Card.Header>
+        <Card.Content>
+          <div class="space-y-3">
+            {#each item.samples as sample, index}
+              <div
+                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+              >
+                <div class="flex-1">
+                  <a
+                    href={sample.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 font-medium break-all"
+                  >
+                    Sample {index + 1}
+                  </a>
+                  <p
+                    class="text-sm text-gray-600 dark:text-gray-400 mt-1 break-all"
+                  >
+                    {sample.url}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onclick={() => window.open(sample.url, "_blank")}
+                  class="ml-4 flex-shrink-0"
+                >
+                  Open
+                </Button>
+              </div>
+            {/each}
+          </div>
+        </Card.Content>
+      </Card.Root>
+    {/if}
     <!-- Samples Section -->
     {#if item.samples && item.samples.length > 0}
       <Card.Root class="mb-8">
@@ -194,13 +261,19 @@
                     <div class="flex items-center gap-2 mt-1">
                       {#if review.rating !== null}
                         <div class="flex items-center gap-1">
-                          <span class="text-yellow-500 text-sm">
-                            {getStarRating(review.rating)}
-                          </span>
+                          <div class="flex items-center gap-1">
+                            <svg viewBox="0 0 100 100" width="22" height="22">
+                              <polygon
+                                points="50,5 61,39 98,39 67,59 78,93 50,72 22,93 33,59 2,39 39,39"
+                                fill="gold"
+                              />
+                            </svg>
+                            {review.rating}
+                          </div>
                           <span
-                            class="text-sm text-gray-600 dark:text-gray-400"
+                            class="text-xs text-gray-600 dark:text-gray-400"
                           >
-                            ({review.rating}/5)
+                            / 5
                           </span>
                         </div>
                       {/if}
@@ -258,7 +331,7 @@
           The requested item could not be found or is no longer available.
         </p>
         <Button variant="outline" onclick={() => history.back()}>
-          ê Back to Items
+          <ArrowLeft />Back to Items
         </Button>
       </div>
     </div>
@@ -269,4 +342,8 @@
   .prose {
     max-width: none;
   }
+  .prose {
+    max-width: none;
+  }
 </style>
+
