@@ -7,6 +7,7 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  import { ArrowLeft } from "@lucide/svelte";
 
   let { data }: { data: PageData } = $props();
 
@@ -31,6 +32,19 @@
       goToPage(data.pagination.page + 1);
     }
   }
+
+  function smartBack() {
+    const referrer = document.referrer;
+    const currentHost = window.location.origin;
+
+    // 外部サイトから直リンクアクセスの場合
+    if (!referrer || !referrer.startsWith(currentHost) || history.length <= 1) {
+      goto("/"); // Default fallback
+    } else {
+      // 内部ナビゲーションの場合
+      history.back();
+    }
+  }
 </script>
 
 <svelte:head>
@@ -38,6 +52,11 @@
 </svelte:head>
 
 <div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <Button variant="outline" size="sm" onclick={smartBack}>
+      <ArrowLeft />Back to Home
+    </Button>
+  </div>
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Items</h1>
     <p class="text-gray-600 dark:text-gray-400">
