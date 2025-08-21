@@ -6,6 +6,7 @@
   import { Button } from "$lib/components/ui/button/index.js";
 
   import { ArrowLeft } from "@lucide/svelte";
+  import { goto } from "$app/navigation";
 
   export let data: PageData;
   $: item = data.item;
@@ -22,6 +23,19 @@
       });
     } catch {
       return "Unknown date";
+    }
+  }
+
+  function smartBack() {
+    const referrer = document.referrer;
+    const currentHost = window.location.origin;
+
+    // ??????????????????
+    if (!referrer || !referrer.startsWith(currentHost) || history.length <= 1) {
+      goto("/items"); // Default fallback
+    } else {
+      // ????????????
+      history.back();
     }
   }
 </script>
@@ -43,7 +57,7 @@
   {#if item}
     <!-- Back navigation -->
     <div class="mb-6">
-      <Button variant="outline" size="sm" onclick={() => history.back()}>
+      <Button variant="outline" size="sm" onclick={smartBack}>
         <ArrowLeft />Back to Items
       </Button>
     </div>
@@ -330,7 +344,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-400">
           The requested item could not be found or is no longer available.
         </p>
-        <Button variant="outline" onclick={() => history.back()}>
+        <Button variant="outline" onclick={smartBack}>
           <ArrowLeft />Back to Items
         </Button>
       </div>
