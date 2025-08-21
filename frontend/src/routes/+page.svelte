@@ -13,7 +13,6 @@
     Github,
     ExternalLink,
     Zap,
-    Globe,
     Code,
     Layers,
     Monitor,

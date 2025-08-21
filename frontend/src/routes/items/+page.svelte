@@ -3,18 +3,15 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import * as Avatar from "$lib/components/ui/avatar/index.js";
-  import { Skeleton } from "$lib/components/ui/skeleton/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
   import { ArrowLeft } from "@lucide/svelte";
+  import { page } from "$app/state";
 
   let { data }: { data: PageData } = $props();
 
-  console.log(data.pagination);
-
   function goToPage(newPage: number) {
-    const url = new URL($page.url);
+    const url = new URL(page.url);
     url.searchParams.set("page", newPage.toString());
     goto(url);
   }
@@ -26,9 +23,7 @@
   }
 
   function nextPage() {
-    console.log("huh?");
     if (data.pagination.hasMore) {
-      console.log("hello?");
       goToPage(data.pagination.page + 1);
     }
   }
