@@ -18,9 +18,7 @@
     Monitor,
     Server,
     Cloud,
-    Icon,
   } from "@lucide/svelte";
-  import { tabArrowUpRight } from "@lucide/lab";
 
   import type { PageData } from "./$types";
   import GanttChart from "$lib/components/ui/gantt/GanttChart.svelte";
@@ -89,8 +87,6 @@
 
   // Scraping status
   const lastScrapingTime = data.traceData[0]._time;
-
-  let scrapingDialogOpen = $state<boolean>(false);
 
   // Selection state
   let selectedSpan = $state<TraceSpan | null>(null);
@@ -555,5 +551,3 @@
     </Tabs>
   </div>
 </div>
-
-<!-- Scraping Confirmation Dialog -->
