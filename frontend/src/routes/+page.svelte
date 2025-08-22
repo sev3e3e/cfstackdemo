@@ -13,7 +13,6 @@
     Github,
     ExternalLink,
     Zap,
-    Globe,
     Code,
     Layers,
     Monitor,
@@ -88,8 +87,6 @@
 
   // Scraping status
   const lastScrapingTime = data.traceData[0]._time;
-
-  let scrapingDialogOpen = $state<boolean>(false);
 
   // Selection state
   let selectedSpan = $state<TraceSpan | null>(null);
@@ -216,7 +213,7 @@
       </div>
     </div>
 
-    <div class="grid lg:grid-cols-[40%_60%] xl:grid-cols-[30%_70%] gap-4">
+    <div class="grid gap-4">
       <!-- Technology Stack -->
       <Card class="mb-4">
         <CardHeader>
@@ -269,14 +266,53 @@
             Distributed architecture with multi-site deployment pattern
           </CardDescription>
         </CardHeader>
-        <CardContent class="h-full">
-          <div class="bg-muted rounded-lg flex items-center justify-center">
-            <img
-              src="https://placehold.co/800x450/e5e7eb/6b7280?text=Infrastructure+Diagram"
-              alt="Infrastructure Diagram"
-              class="w-full h-full object-cover rounded-lg"
-            />
-          </div>
+        <CardContent>
+          <Tabs value="overview">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="detail">Detail</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <div class="flex flex-col gap-4 justify-center">
+                <Button
+                  size="lg"
+                  class="gap-2 p-3"
+                  href="/arch.svg"
+                  target="_blank"
+                >
+                  <ExternalLink class="w-4 h-4" />
+                  新しいタブで画像を開く
+                </Button>
+                <div
+                  class=" bg-muted rounded-lg flex flex-col items-center justify-center"
+                >
+                  <img
+                    src="/arch.svg"
+                    alt="Infrastructure Diagram"
+                    class="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="detail">
+              <div class="flex flex-col gap-4 justify-center">
+                <Button
+                  size="lg"
+                  class="gap-2 p-3"
+                  href="/arch_detail.svg"
+                  target="_blank"
+                >
+                  <ExternalLink class="w-4 h-4" />
+                  新しいタブで画像を開く
+                </Button>
+                <img
+                  src="/arch_detail.svg"
+                  alt="Infrastructure Diagram"
+                  class="w-full h-full object-contain rounded-lg"
+                />
+              </div></TabsContent
+            >
+          </Tabs>
         </CardContent>
       </Card>
     </div>
@@ -515,5 +551,3 @@
     </Tabs>
   </div>
 </div>
-
-<!-- Scraping Confirmation Dialog -->
