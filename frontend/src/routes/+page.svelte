@@ -31,6 +31,7 @@
   } from "$lib/components/ui/tabs";
   import * as Select from "$lib/components/ui/select/index.js";
   import { browser } from "$app/environment";
+  import { onMount } from "svelte";
 
   const technologies = [
     { name: "SvelteKit", icon: Code, category: "Frontend" },
@@ -57,9 +58,7 @@
     {} as Record<string, typeof technologies>
   );
 
-  // dashboard components
   let { data }: { data: PageData } = $props();
-
   interface LogEntry {
     "@app.axiom-logging-version": string;
     _sysTime: string;
@@ -80,13 +79,20 @@
   const traceHistoryEntries = $state(data.traceHistoryData || []);
 
   // Trace selection and loading state
-  let selectedTraceId = $state<string | null>(data.traceData[0].trace_id);
+  let selectedTraceId = $state<string | null>(null);
+  let currentTraceSpans = $state<TraceSpan[]>([]);
+  let currentTraceLogs = $state<any[]>([]);
   let loadingTrace = $state(false);
-  let currentTraceSpans = $state<TraceSpan[]>(data.traceData);
-  let currentTraceLogs = $state<any[]>(data.logData);
+  let lastScrapingTime = $state("");
 
-  // Scraping status
-  const lastScrapingTime = data.traceData[0]._time;
+  onMount(async () => {
+    const [traces, logs] = await Promise.all([data.traceData, data.logData]);
+
+    currentTraceSpans = traces;
+    currentTraceLogs = logs;
+    selectedTraceId = traces[0]?.trace_id ?? null;
+    lastScrapingTime = traces[0]._time;
+  });
 
   // Selection state
   let selectedSpan = $state<TraceSpan | null>(null);
@@ -369,7 +375,11 @@
               {/each}
             </Select.Content>
           </Select.Root>
-          <div class="text-xs text-gray-600">{currentTraceSpans[0]._time}</div>
+          <div class="text-xs text-gray-600">
+            {currentTraceSpans.length > 0
+              ? currentTraceSpans[0]._time
+              : "Invalid Date"}
+          </div>
         </div>
       </div>
 
