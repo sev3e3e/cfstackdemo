@@ -3,13 +3,21 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import * as Avatar from "$lib/components/ui/avatar/index.js";
+  import * as Table from "$lib/components/ui/table/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
-
+  import * as Chart from "$lib/components/ui/chart/index.js";
+  import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "$lib/components/ui/tabs";
   import { ArrowLeft } from "@lucide/svelte";
   import { goto } from "$app/navigation";
+  import { AreaChart } from "layerchart";
+  import { curveNatural } from "d3-shape";
+  import { scaleUtc } from "d3-scale";
 
-  export let data: PageData;
-  $: item = data.item;
   export let data: PageData;
   $: item = data.item;
 
@@ -30,22 +38,100 @@
     const referrer = document.referrer;
     const currentHost = window.location.origin;
 
-    // ??????????????????
     if (!referrer || !referrer.startsWith(currentHost) || history.length <= 1) {
       goto("/items"); // Default fallback
     } else {
-      // ????????????
       history.back();
     }
   }
+
+  // フラット化して1行=1カテゴリ×1日
+  const rows = data.pricehistory?.flatMap((d) =>
+    (d.prices ?? []).map((p) => ({
+      date: new Date(d.date),
+      name: p.name,
+      normal: p.normalPrice,
+      sale: p.salePrice,
+    }))
+  );
+
+  // 日付昇順→カテゴリ名昇順
+  rows?.sort((a, b) => {
+    const t = a.date.getTime() - b.date.getTime();
+    return t !== 0 ? t : a.name.localeCompare(b.name, "ja");
+  });
+
+  const nf = new Intl.NumberFormat("ja-JP");
+
+  // 1) カテゴリ一覧を抽出
+  const categories = Array.from(new Set(rows?.map((r) => r.name))).sort();
+
+  // 2) 日付単位で集約
+  const grouped = rows
+    ? Array.from(
+        rows
+          .reduce((acc, r) => {
+            const d = r.date instanceof Date ? r.date : new Date(r.date);
+            const key = d.getTime();
+            if (!acc.has(key)) acc.set(key, { date: d, values: new Map() });
+            acc.get(key).values.set(r.name, r.sale);
+            return acc;
+          }, new Map())
+          .values()
+      ).sort((a, b) => a.date - b.date)
+    : undefined;
+
+  const totalCols = 1 + categories.length; // 日付 + 各カテゴリ1列
+
+  // chart functions
+
+  // 1) シリーズ名を抽出（重複なし）
+  function extractSeries(_data: typeof data.pricehistory): string[] {
+    return Array.from(
+      new Set(_data?.flatMap((d) => d.prices.map((p) => p.name)))
+    );
+  }
+
+  // 2) AreaChart用データへ整形
+  function buildChartData(
+    _data: typeof data.pricehistory,
+    value: "salePrice" | "normalPrice" = "salePrice"
+  ) {
+    return _data?.map((d) => {
+      const row: Record<string, any> = { date: new Date(d.date) };
+      for (const p of d.prices) row[p.name] = p[value] ?? 0;
+      return row;
+    });
+  }
+
+  // 3) シリーズ定義を生成（chartConfigが無い場合は簡易配色を割当て）
+  function buildSeriesDefs(
+    names: string[],
+    chartConfig?: Record<string, { color: string }>
+  ) {
+    const palette = [
+      "#2563eb",
+      "#10b981",
+      "#f59e0b",
+      "#ef4444",
+      "#8b5cf6",
+      "#14b8a6",
+      "#e11d48",
+      "#22c55e",
+    ];
+    return names.map((name, i) => ({
+      key: name,
+      label: name,
+      color: chartConfig?.[name]?.color ?? palette[i % palette.length],
+    }));
+  }
+
+  const seriesNames = extractSeries(data.pricehistory);
+  const _chartData = buildChartData(data.pricehistory, "salePrice"); // or "normalPrice"
+  const _series = buildSeriesDefs(seriesNames); // chartConfigがある場合のみ
 </script>
 
 <svelte:head>
-  <title>{item?.title || "Item Details"} - Demo Site</title>
-  <meta
-    name="description"
-    content={item?.description || "View detailed information about this item"}
-  />
   <title>{item?.title || "Item Details"} - Demo Site</title>
   <meta
     name="description"
@@ -64,32 +150,33 @@
 
     <!-- Main item details -->
     <Card.Root class="mb-8">
-      <Card.Header>
-        <div class="flex items-start gap-6">
-          <div class="flex-1">
+      <Card.Header class="">
+        <div class="flex items-start md:gap-6 gap-4 min-w-0">
+          <div class="flex-1 min-w-0">
             <Card.Title
               class="text-2xl font-bold text-gray-900 dark:text-white mb-2"
             >
               {item.title}
             </Card.Title>
             <Card.Description
-              class="text-gray-600 dark:text-gray-400 text-base"
+              class="text-gray-600 dark:text-gray-400 text-base "
             >
               {item.description || "No description available"}
             </Card.Description>
 
-            <div class="flex items-center gap-3 mt-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
               <Badge variant="secondary">
                 Site ID: {item.siteId}
               </Badge>
-              <Badge variant="outline">
+              <!-- 340px????? -->
+              <Badge variant="outline" class="text-xs">
                 ID: {item.siteSpecificId}
               </Badge>
             </div>
           </div>
 
           {#if item.thumbUrl}
-            <Avatar.Root class="w-24 h-24">
+            <Avatar.Root class="w-20 h-20 shrink-0">
               <Avatar.Image src={item.thumbUrl} alt={item.title} />
               <Avatar.Fallback class="text-lg">
                 {item.title.slice(0, 2).toUpperCase()}
@@ -140,67 +227,104 @@
         </div>
       </Card.Content>
     </Card.Root>
-          <!-- External Link -->
-          <div>
-            <Button
-              variant="default"
-              size="lg"
-              onclick={() => window.open(item.url, "_blank")}
-              class="w-full sm:w-auto"
-            >
-              View Original Item
-            </Button>
-          </div>
-        </div>
-      </Card.Content>
-    </Card.Root>
 
-    <!-- Samples Section -->
-    {#if item.samples && item.samples.length > 0}
+    <!-- PriceHistory Section -->
+    {#if data.pricehistory && data.pricehistory.length > 0 && grouped}
       <Card.Root class="mb-8">
         <Card.Header>
           <Card.Title
             class="text-xl font-semibold text-gray-900 dark:text-white"
           >
-            Samples ({item.samples.length})
+            Prices
           </Card.Title>
-          <Card.Description>Available samples for this item</Card.Description>
+          <Card.Description>Item prices with table and chart</Card.Description>
         </Card.Header>
         <Card.Content>
-          <div class="space-y-3">
-            {#each item.samples as sample, index}
-              <div
-                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-              >
-                <div class="flex-1">
-                  <a
-                    href={sample.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 font-medium break-all"
-                  >
-                    Sample {index + 1}
-                  </a>
-                  <p
-                    class="text-sm text-gray-600 dark:text-gray-400 mt-1 break-all"
-                  >
-                    {sample.url}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onclick={() => window.open(sample.url, "_blank")}
-                  class="ml-4 flex-shrink-0"
+          <Tabs value="table">
+            <TabsList>
+              <TabsTrigger value="table">Table</TabsTrigger>
+              <TabsTrigger value="chart">Chart</TabsTrigger>
+            </TabsList>
+            <TabsContent value="table">
+              <!-- table -->
+              <Table.Root>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.Head>日付</Table.Head>
+                    {#each categories as cat}
+                      <Table.Head>{cat} セール価格</Table.Head>
+                    {/each}
+                  </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                  {#if grouped.length === 0}
+                    <Table.Row>
+                      <Table.Cell colspan={totalCols}
+                        >データがありません</Table.Cell
+                      >
+                    </Table.Row>
+                  {:else}
+                    {#each grouped as g}
+                      <Table.Row>
+                        <Table.Cell>{g.date.toLocaleString("ja-JP")}</Table.Cell
+                        >
+                        {#each categories as cat}
+                          {#if g.values.has(cat)}
+                            <Table.Cell
+                              >¥{nf.format(g.values.get(cat))}</Table.Cell
+                            >
+                          {:else}
+                            <Table.Cell>-</Table.Cell>
+                          {/if}
+                        {/each}
+                      </Table.Row>
+                    {/each}
+                  {/if}
+                </Table.Body>
+              </Table.Root>
+            </TabsContent>
+
+            <!-- chart -->
+            <TabsContent value="chart">
+              <Chart.Container config={{}}>
+                <AreaChart
+                  legend
+                  data={_chartData}
+                  x="date"
+                  xScale={scaleUtc()}
+                  yPadding={[0, 25]}
+                  series={_series}
+                  seriesLayout="stack"
+                  props={{
+                    area: {
+                      curve: curveNatural,
+                      "fill-opacity": 0.4,
+                      line: { class: "stroke-1" },
+                      motion: "tween",
+                    },
+                    xAxis: {
+                      format: (v: Date) =>
+                        v.toLocaleDateString("en-US", { month: "short" }),
+                    },
+                    yAxis: { format: () => "" },
+                  }}
                 >
-                  Open
-                </Button>
-              </div>
-            {/each}
-          </div>
+                  {#snippet tooltip()}
+                    <Chart.Tooltip
+                      labelFormatter={(v: Date) =>
+                        v.toLocaleDateString("en-US", { month: "long" })}
+                      indicator="line"
+                    />
+                  {/snippet}
+                </AreaChart>
+              </Chart.Container>
+            </TabsContent>
+          </Tabs>
         </Card.Content>
       </Card.Root>
     {/if}
+
     <!-- Samples Section -->
     {#if item.samples && item.samples.length > 0}
       <Card.Root class="mb-8">
@@ -356,8 +480,4 @@
   .prose {
     max-width: none;
   }
-  .prose {
-    max-width: none;
-  }
 </style>
-

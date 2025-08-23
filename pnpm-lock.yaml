@@ -455,6 +455,9 @@ importers:
       '@cfstackdemo/main-r2':
         specifier: workspace:*
         version: link:../backend/main-r2
+      '@cfstackdemo/utility':
+        specifier: workspace:*
+        version: link:../utility
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
@@ -467,6 +470,12 @@ importers:
       d3:
         specifier: ^7.9.0
         version: 7.9.0
+      d3-scale:
+        specifier: ^4.0.2
+        version: 4.0.2
+      d3-shape:
+        specifier: ^3.2.0
+        version: 3.2.0
       tailwind-merge:
         specifier: 3.3.1
         version: 3.3.1
@@ -495,6 +504,12 @@ importers:
       '@tanstack/table-core':
         specifier: ^8.21.3
         version: 8.21.3
+      '@types/d3-scale':
+        specifier: ^4.0.9
+        version: 4.0.9
+      '@types/d3-shape':
+        specifier: ^3.1.7
+        version: 3.1.7
       concurrently:
         specifier: ^9.2.0
         version: 9.2.0
