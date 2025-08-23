@@ -17,6 +17,7 @@
   import { AreaChart } from "layerchart";
   import { curveNatural } from "d3-shape";
   import { scaleUtc } from "d3-scale";
+  import { currentPage } from "$lib/stores/pagestore";
 
   export let data: PageData;
   $: item = data.item;
@@ -143,7 +144,14 @@
   {#if item}
     <!-- Back navigation -->
     <div class="mb-6">
-      <Button variant="outline" size="sm" onclick={smartBack}>
+      <!-- <Button variant="outline" size="sm" onclick={smartBack}>
+        <ArrowLeft />Back to Items
+      </Button> -->
+      <Button
+        variant="outline"
+        size="sm"
+        href={$currentPage ? `/items?page=${$currentPage}` : "/items"}
+      >
         <ArrowLeft />Back to Items
       </Button>
     </div>
