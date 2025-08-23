@@ -7,6 +7,12 @@
   import { goto } from "$app/navigation";
   import { ArrowLeft } from "@lucide/svelte";
   import { page } from "$app/state";
+  import { currentPage } from "$lib/stores/pagestore";
+
+  $effect(() => {
+    const p = Number(page.url.searchParams.get("page") ?? 1);
+    currentPage.set(p);
+  });
 
   let { data }: { data: PageData } = $props();
 
@@ -29,16 +35,7 @@
   }
 
   function smartBack() {
-    const referrer = document.referrer;
-    const currentHost = window.location.origin;
-
-    // 外部サイトから直リンクアクセスの場合
-    if (!referrer || !referrer.startsWith(currentHost) || history.length <= 1) {
-      goto("/"); // Default fallback
-    } else {
-      // 内部ナビゲーションの場合
-      history.back();
-    }
+    goto("/");
   }
 </script>
 
@@ -48,7 +45,10 @@
 
 <div class="container mx-auto px-4 py-8">
   <div class="mb-6">
-    <Button variant="outline" size="sm" onclick={smartBack}>
+    <!-- <Button variant="outline" size="sm" onclick={smartBack}>
+      <ArrowLeft />Back to Home
+    </Button> -->
+    <Button variant="outline" size="sm" href="/">
       <ArrowLeft />Back to Home
     </Button>
   </div>
