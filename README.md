@@ -94,39 +94,74 @@ OpenTelemetry
 
 ## Local Setup
 
-Execute pnpm commands in root.
+rootで以下を実行します。
+
+1. change branch
+
+```
+git checkout -b out-of-the-box
+```
+
+2. install dependency packages
+
+```
+pnpm i 
+```
+
+😀🎉
+
+### Run Local
 
 **cliを複数使う必要があります。**
 
-### frontend local setup
+### frontend local run
 
 別々のcliで以下の3つのインスタンスを起動します。
 
-1. pnpm run dev:d1
-2. pnpm run dev:r2
-3. pnpm run dev:frontend
+```
+pnpm run dev:d1
+```
 
-### backend local setup
+```
+pnpm run dev:r2
+```
+
+```
+pnpm run dev:frontend
+```
+
+access localhost and explore them! 😀🎉
+
+### backend local run
 
 別々のcliで以下の3つのインスタンスを起動します。
 
-1. pnpm run dev:proxy
-2. pnpm run dev:mws
-3. pnpm run dev:backend
+```
+pnpm run dev:proxy
+```
+
+```
+pnpm run dev:mws
+```
+
+```
+pnpm run dev:backend
+```
 
 最後に`__scheduled`エンドポイントにアクセスしてscheduled handlerを起動してください。
 
-4. access `http://localhost:{PORT}/__scheduled` on web browser or something.
+access `http://localhost:{PORT}/__scheduled` in a web browser or something.
 
+😀🎉
 
 <details>
-    <summary>何故こんな複雑なのか？</summary>
+    <summary>何故こんな複雑なの？😭</summary>
 
     frontendではsveltekit - backend(r2,d1)間のlocal通信が同じcli上で動いているとうまくいかないため。
-    configオプション, npm-run-all2等の並列実行, いずれも。
+    (configオプション, npm-run-all2等の並列実行等, いずれも。)
 
     ---
 
-    backendではworkerはある程度まとめているが、mock-web-serverのみ別にしている。これはmulti configを指定するとprimary worker以外serverがlistenしないため。
-    gcpのproxyはwranglerではないため別枠起動。並列実行よりも安定を取った。
+    backendではworkerはmulitple configである程度まとめているが、mock-web-serverのみ別にしている。これはmulti configだととprimary worker以外serverがlistenしないため。
+    gcpのproxyはwranglerではないため別枠起動。並列実行できそうだがもうここまで来たら別枠でよい。かも。
 </details>
