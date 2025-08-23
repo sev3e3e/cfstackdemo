@@ -1,3 +1,4 @@
+import { ConvertNumberIdToSite } from "@cfstackdemo/utility";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, platform }) => {
@@ -8,7 +9,13 @@ export const load: PageServerLoad = async ({ params, platform }) => {
     itemid,
     platform?.env.ENVIRONMENT
   );
+
+  const pricehistory = await platform?.env.MainR2Worker.readPriceHistory(
+    ConvertNumberIdToSite(Number(siteid)),
+    itemid
+  );
   return {
     item: item,
+    pricehistory,
   };
 };

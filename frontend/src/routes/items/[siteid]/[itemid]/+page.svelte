@@ -3,10 +3,20 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import * as Avatar from "$lib/components/ui/avatar/index.js";
+  import * as Table from "$lib/components/ui/table/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
-
+  import * as Chart from "$lib/components/ui/chart/index.js";
+  import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "$lib/components/ui/tabs";
   import { ArrowLeft } from "@lucide/svelte";
   import { goto } from "$app/navigation";
+  import { AreaChart } from "layerchart";
+  import { curveNatural } from "d3-shape";
+  import { scaleUtc } from "d3-scale";
 
   export let data: PageData;
   $: item = data.item;
@@ -36,6 +46,71 @@
       history.back();
     }
   }
+
+  // フラット化して1行=1カテゴリ×1日
+  const rows = data.pricehistory.flatMap((d) =>
+    (d.prices ?? []).map((p) => ({
+      date: new Date(d.date),
+      name: p.name,
+      normal: p.normalPrice,
+      sale: p.salePrice,
+    }))
+  );
+
+  // 日付昇順→カテゴリ名昇順
+  rows.sort((a, b) => {
+    const t = a.date.getTime() - b.date.getTime();
+    return t !== 0 ? t : a.name.localeCompare(b.name, "ja");
+  });
+
+  const nf = new Intl.NumberFormat("ja-JP");
+
+  // chart functions
+
+  // 1) シリーズ名を抽出（重複なし）
+  function extractSeries(data: typeof data.pricehistory): string[] {
+    return Array.from(
+      new Set(data.flatMap((d) => d.prices.map((p) => p.name)))
+    );
+  }
+
+  // 2) AreaChart用データへ整形
+  function buildChartData(
+    data: typeof data.pricehistory,
+    value: "salePrice" | "normalPrice" = "salePrice"
+  ) {
+    return data.map((d) => {
+      const row: Record<string, any> = { date: new Date(d.date) };
+      for (const p of d.prices) row[p.name] = p[value] ?? 0;
+      return row;
+    });
+  }
+
+  // 3) シリーズ定義を生成（chartConfigが無い場合は簡易配色を割当て）
+  function buildSeriesDefs(
+    names: string[],
+    chartConfig?: Record<string, { color: string }>
+  ) {
+    const palette = [
+      "#2563eb",
+      "#10b981",
+      "#f59e0b",
+      "#ef4444",
+      "#8b5cf6",
+      "#14b8a6",
+      "#e11d48",
+      "#22c55e",
+    ];
+    return names.map((name, i) => ({
+      key: name,
+      label: name,
+      color: chartConfig?.[name]?.color ?? palette[i % palette.length],
+    }));
+  }
+
+  const seriesNames = extractSeries(data.pricehistory);
+  const _chartData = buildChartData(data.pricehistory, "salePrice"); // or "normalPrice"
+  const _series = buildSeriesDefs(seriesNames); // chartConfigがある場合のみ
 </script>
 
 <svelte:head>
@@ -134,6 +209,94 @@
         </div>
       </Card.Content>
     </Card.Root>
+
+    <!-- PriceHistory Section -->
+    {#if data.pricehistory && data.pricehistory.length > 0}
+      <Card.Root class="mb-8">
+        <Card.Header>
+          <Card.Title
+            class="text-xl font-semibold text-gray-900 dark:text-white"
+          >
+            Prices
+          </Card.Title>
+          <Card.Description>Item prices with table and chart</Card.Description>
+        </Card.Header>
+        <Card.Content>
+          <Tabs value="table">
+            <TabsList>
+              <TabsTrigger value="table">Table</TabsTrigger>
+              <TabsTrigger value="chart">Chart</TabsTrigger>
+            </TabsList>
+            <TabsContent value="table">
+              <!-- table -->
+              <Table.Root>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.Head>日付</Table.Head>
+                    <Table.Head>カテゴリ</Table.Head>
+                    <Table.Head>通常価格</Table.Head>
+                    <Table.Head>セール価格</Table.Head>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {#if rows.length === 0}
+                    <Table.Row>
+                      <Table.Cell colspan={4}>データがありません</Table.Cell>
+                    </Table.Row>
+                  {:else}
+                    {#each rows as r}
+                      <Table.Row>
+                        <Table.Cell>{r.date.toLocaleString("ja-JP")}</Table.Cell
+                        >
+                        <Table.Cell>{r.name}</Table.Cell>
+                        <Table.Cell>¥{nf.format(r.normal)}</Table.Cell>
+                        <Table.Cell>¥{nf.format(r.sale)}</Table.Cell>
+                      </Table.Row>
+                    {/each}
+                  {/if}
+                </Table.Body>
+              </Table.Root></TabsContent
+            >
+
+            <!-- chart -->
+            <TabsContent value="chart">
+              <Chart.Container config={{}}>
+                <AreaChart
+                  legend
+                  data={_chartData}
+                  x="date"
+                  xScale={scaleUtc()}
+                  yPadding={[0, 25]}
+                  series={_series}
+                  seriesLayout="stack"
+                  props={{
+                    area: {
+                      curve: curveNatural,
+                      "fill-opacity": 0.4,
+                      line: { class: "stroke-1" },
+                      motion: "tween",
+                    },
+                    xAxis: {
+                      format: (v: Date) =>
+                        v.toLocaleDateString("en-US", { month: "short" }),
+                    },
+                    yAxis: { format: () => "" },
+                  }}
+                >
+                  {#snippet tooltip()}
+                    <Chart.Tooltip
+                      labelFormatter={(v: Date) =>
+                        v.toLocaleDateString("en-US", { month: "long" })}
+                      indicator="line"
+                    />
+                  {/snippet}
+                </AreaChart>
+              </Chart.Container>
+            </TabsContent>
+          </Tabs>
+        </Card.Content>
+      </Card.Root>
+    {/if}
 
     <!-- Samples Section -->
     {#if item.samples && item.samples.length > 0}
