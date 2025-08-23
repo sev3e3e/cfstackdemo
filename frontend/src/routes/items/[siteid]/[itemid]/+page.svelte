@@ -38,17 +38,15 @@
     const referrer = document.referrer;
     const currentHost = window.location.origin;
 
-    // ??????????????????
     if (!referrer || !referrer.startsWith(currentHost) || history.length <= 1) {
       goto("/items"); // Default fallback
     } else {
-      // ????????????
       history.back();
     }
   }
 
   // フラット化して1行=1カテゴリ×1日
-  const rows = data.pricehistory.flatMap((d) =>
+  const rows = data.pricehistory?.flatMap((d) =>
     (d.prices ?? []).map((p) => ({
       date: new Date(d.date),
       name: p.name,
@@ -58,28 +56,48 @@
   );
 
   // 日付昇順→カテゴリ名昇順
-  rows.sort((a, b) => {
+  rows?.sort((a, b) => {
     const t = a.date.getTime() - b.date.getTime();
     return t !== 0 ? t : a.name.localeCompare(b.name, "ja");
   });
 
   const nf = new Intl.NumberFormat("ja-JP");
 
+  // 1) カテゴリ一覧を抽出
+  const categories = Array.from(new Set(rows?.map((r) => r.name))).sort();
+
+  // 2) 日付単位で集約
+  const grouped = rows
+    ? Array.from(
+        rows
+          .reduce((acc, r) => {
+            const d = r.date instanceof Date ? r.date : new Date(r.date);
+            const key = d.getTime();
+            if (!acc.has(key)) acc.set(key, { date: d, values: new Map() });
+            acc.get(key).values.set(r.name, r.sale);
+            return acc;
+          }, new Map())
+          .values()
+      ).sort((a, b) => a.date - b.date)
+    : undefined;
+
+  const totalCols = 1 + categories.length; // 日付 + 各カテゴリ1列
+
   // chart functions
 
   // 1) シリーズ名を抽出（重複なし）
-  function extractSeries(data: typeof data.pricehistory): string[] {
+  function extractSeries(_data: typeof data.pricehistory): string[] {
     return Array.from(
-      new Set(data.flatMap((d) => d.prices.map((p) => p.name)))
+      new Set(_data?.flatMap((d) => d.prices.map((p) => p.name)))
     );
   }
 
   // 2) AreaChart用データへ整形
   function buildChartData(
-    data: typeof data.pricehistory,
+    _data: typeof data.pricehistory,
     value: "salePrice" | "normalPrice" = "salePrice"
   ) {
-    return data.map((d) => {
+    return _data?.map((d) => {
       const row: Record<string, any> = { date: new Date(d.date) };
       for (const p of d.prices) row[p.name] = p[value] ?? 0;
       return row;
@@ -211,7 +229,7 @@
     </Card.Root>
 
     <!-- PriceHistory Section -->
-    {#if data.pricehistory && data.pricehistory.length > 0}
+    {#if data.pricehistory && data.pricehistory.length > 0 && grouped}
       <Card.Root class="mb-8">
         <Card.Header>
           <Card.Title
@@ -233,30 +251,39 @@
                 <Table.Header>
                   <Table.Row>
                     <Table.Head>日付</Table.Head>
-                    <Table.Head>カテゴリ</Table.Head>
-                    <Table.Head>通常価格</Table.Head>
-                    <Table.Head>セール価格</Table.Head>
+                    {#each categories as cat}
+                      <Table.Head>{cat} セール価格</Table.Head>
+                    {/each}
                   </Table.Row>
                 </Table.Header>
+
                 <Table.Body>
-                  {#if rows.length === 0}
+                  {#if grouped.length === 0}
                     <Table.Row>
-                      <Table.Cell colspan={4}>データがありません</Table.Cell>
+                      <Table.Cell colspan={totalCols}
+                        >データがありません</Table.Cell
+                      >
                     </Table.Row>
                   {:else}
-                    {#each rows as r}
+                    {#each grouped as g}
                       <Table.Row>
-                        <Table.Cell>{r.date.toLocaleString("ja-JP")}</Table.Cell
+                        <Table.Cell>{g.date.toLocaleString("ja-JP")}</Table.Cell
                         >
-                        <Table.Cell>{r.name}</Table.Cell>
-                        <Table.Cell>¥{nf.format(r.normal)}</Table.Cell>
-                        <Table.Cell>¥{nf.format(r.sale)}</Table.Cell>
+                        {#each categories as cat}
+                          {#if g.values.has(cat)}
+                            <Table.Cell
+                              >¥{nf.format(g.values.get(cat))}</Table.Cell
+                            >
+                          {:else}
+                            <Table.Cell>-</Table.Cell>
+                          {/if}
+                        {/each}
                       </Table.Row>
                     {/each}
                   {/if}
                 </Table.Body>
-              </Table.Root></TabsContent
-            >
+              </Table.Root>
+            </TabsContent>
 
             <!-- chart -->
             <TabsContent value="chart">
