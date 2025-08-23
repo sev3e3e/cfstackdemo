@@ -30,10 +30,11 @@ export default class Handler extends WorkerEntrypoint<Env> {
 		await savePriceHistory(deps, { params, otelContext });
 	}
 
-	readPriceHistory(site: Site, id: string) {
+	async readPriceHistory(site: Site, id: string) {
 		const path = CreatePriceHistoryPath(site, id);
+		const res = await this.env.HistoryR2.get(path);
 
-		return ResultAsync.fromPromise(this.env.HistoryR2.get(path), (e) => e);
+		return res?.json();
 	}
 }
 
