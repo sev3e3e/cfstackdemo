@@ -1,11 +1,11 @@
 import { ConsoleExporter } from '@cfstackdemo/lightweight-otel-sdk';
-import type { DirectSitefFetcher } from '@cfstackdemo/sitef-fetcher';
+import type { RelaySitefFetcher } from '@cfstackdemo/sitef-fetcher';
 import type { DEMO_CommonSiteQueueData } from '@cfstackdemo/types';
 import type { Env } from '../worker-configuration';
 import { ConsoleLogger } from '@cfstackdemo/logger';
 import type { SitefEntrypointDep } from './interfaces';
 import { runEntrypoint } from './runEntrypoint';
-import { unwrapFetcherStub } from './lib/unwrapStubDirect';
+import { unwrapRelayFetcherStub } from './lib/unwrapStubRelay';
 
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
@@ -21,15 +21,15 @@ export default {
 
 // https://github.com/cloudflare/workers-sdk/issues/8588
 // holy
-export async function CreateDepsFromEnv(env: Env): Promise<SitefEntrypointDep> {
+async function CreateDepsFromEnv(env: Env): Promise<SitefEntrypointDep> {
 	const environment = env.ENVIRONMENT;
 
 	const logger = new ConsoleLogger();
 
 	// POJO以外渡せないためDI不可
-	const directFetcherStub = await env.SitefFetcher.createDirectSitefFetcher(env.ENVIRONMENT);
+	const relayFetcherStub = await env.SitefFetcher.createRelaySitefFetcher(env.ENVIRONMENT);
 
-	const directFetcher = unwrapFetcherStub(directFetcherStub as unknown as Rpc.Stub<DirectSitefFetcher>);
+	const relayFetcher = unwrapRelayFetcherStub(relayFetcherStub as unknown as Rpc.Stub<RelaySitefFetcher>);
 
 	switch (environment) {
 		case 'production':
@@ -46,19 +46,7 @@ export async function CreateDepsFromEnv(env: Env): Promise<SitefEntrypointDep> {
 				// exporter: new AxiomExporter(env.AXIOM_API_TOKEN, env.AXIOM_TRACE_DATASET),
 				sendBatch: (messages: Iterable<MessageSendRequest<DEMO_CommonSiteQueueData>>, options?: QueueSendBatchOptions) =>
 					env.DemoScrapingQueue.sendBatch(messages, options),
-				fetcher: directFetcher,
-			};
-
-		case 'test':
-			return {
-				logger,
-				CheckNeedScrapingBatch,
-				environment: environment,
-				exporter: new ConsoleExporter(),
-				// exporter: new AxiomExporter(env.AXIOM_API_TOKEN, env.AXIOM_TRACE_DATASET),
-				sendBatch: (messages: Iterable<MessageSendRequest<DEMO_CommonSiteQueueData>>, options?: QueueSendBatchOptions) =>
-					env.DemoScrapingQueue.sendBatch(messages, options),
-				fetcher: directFetcher,
+				fetcher: relayFetcher,
 			};
 	}
 }

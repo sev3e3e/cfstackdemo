@@ -5,7 +5,14 @@
   "scripts": {
     "test:all": "pnpm --filter \"*\" test",
     "dev": "pnpm --filter \"*\" dev:example",
-    "deploy:all": "pnpm --filter \"*\" run deploy"
+    "deploy:all": "pnpm --filter \"*\" run deploy",
+    "dev:proxy": "pnpm --filter '@cfstackdemo/gcp-request-relay' dev",
+    "dev:mws": "pnpm --filter '@cfstackdemo/mock-web-server' dev",
+    "dev:backend": "pnpm --filter '@cfstackdemo/sitef-entrypoint' dev:q",
+    "dev:frontend": "pnpm --filter '@cfstackdemo/frontend' dev",
+    "dev:r2": "pnpm --filter '@cfstackdemo/main-r2' dev",
+    "dev:d1": "pnpm --filter '@cfstackdemo/main-d1' dev",
+    "dev:frontend_unstable": "pnpm --filter '@cfstackdemo/frontend' _dev"
   },
   "keywords": [],
   "author": "",

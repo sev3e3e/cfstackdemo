@@ -13,7 +13,6 @@
     Github,
     ExternalLink,
     Zap,
-    Globe,
     Code,
     Layers,
     Monitor,
@@ -88,8 +87,6 @@
 
   // Scraping status
   const lastScrapingTime = data.traceData[0]._time;
-
-  let scrapingDialogOpen = $state<boolean>(false);
 
   // Selection state
   let selectedSpan = $state<TraceSpan | null>(null);
@@ -179,18 +176,18 @@
   });
 </script>
 
-<div class="min-h-screen bg-gradient-to-br from-background to-slate-300/20">
-  <div class="container mx-auto px-4 pt-16">
+<div
+  class="min-h-screen bg-gradient-to-br from-background to-slate-300/20 h-full"
+>
+  <div class="container mx-auto px-2 md:px-4 pt-16">
     <!-- Hero Section -->
-    <div class="text-center mb-16">
+    <div class="text-center md:mb-16 mb-8">
       <h1
         class="text-4xl md:text-6xl font-bold mb-3 pb-6 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"
       >
         CFStack Scraping Demo
       </h1>
-      <div
-        class="text-xl text-muted-foreground mb-8 mx-auto text-nowrap text-center"
-      >
+      <div class="text-xl text-muted-foreground mb-8 mx-auto text-center">
         <p>外部サイトのデータをScrapingし保存, 表示するデモアプリです。</p>
         <p>
           フロントからバックエンドまでCloudflareで実装し、動作やパフォーマンスは
@@ -198,6 +195,7 @@
         </p>
       </div>
 
+      <!-- buttons -->
       <div class="flex gap-4 justify-center">
         <Button
           size="lg"
@@ -215,7 +213,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-[30%_70%] gap-4">
+    <div class="grid gap-4">
       <!-- Technology Stack -->
       <Card class="mb-4">
         <CardHeader>
@@ -229,7 +227,7 @@
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="grid gap-5 grid-cols-2">
+          <div class="grid gap-5 md:grid-cols-2 grid-cols-1">
             {#each Object.entries(techByCategory) as [category, techs]}
               <div class="flex flex-col h-full">
                 <div class="mb-3 h-full">
@@ -269,33 +267,75 @@
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div
-            class="aspect-video bg-muted rounded-lg flex items-center justify-center"
-          >
-            <img
-              src="https://placehold.co/800x450/e5e7eb/6b7280?text=Infrastructure+Diagram"
-              alt="Infrastructure Diagram"
-              class="w-full h-full object-cover rounded-lg"
-            />
-          </div>
+          <Tabs value="overview">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="detail">Detail</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview">
+              <div class="flex flex-col gap-4 justify-center">
+                <Button
+                  size="lg"
+                  class="gap-2 p-3"
+                  href="/arch.svg"
+                  target="_blank"
+                >
+                  <ExternalLink class="w-4 h-4" />
+                  新しいタブで画像を開く
+                </Button>
+                <div
+                  class=" bg-muted rounded-lg flex flex-col items-center justify-center"
+                >
+                  <img
+                    src="/arch.svg"
+                    alt="Infrastructure Diagram"
+                    class="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="detail">
+              <div class="flex flex-col gap-4 justify-center">
+                <Button
+                  size="lg"
+                  class="gap-2 p-3"
+                  href="/arch_detail.svg"
+                  target="_blank"
+                >
+                  <ExternalLink class="w-4 h-4" />
+                  新しいタブで画像を開く
+                </Button>
+                <img
+                  src="/arch_detail.svg"
+                  alt="Infrastructure Diagram"
+                  class="w-full h-full object-contain rounded-lg"
+                />
+              </div></TabsContent
+            >
+          </Tabs>
         </CardContent>
       </Card>
     </div>
   </div>
 
   <!-- Otel + Log Dashboard component -->
-  <div class="h-screen min-h-0 container mx-auto">
+  <div class="min-h-0 container px-2 md:px-4 mx-auto">
     <!-- Header -->
-    <div class="flex gap-3 items-center border-b">
-      <div class="p-4 border-r-2 border-slate-200 m-4">
+    <div class="flex flex-col md:flex-row gap-3 md:items-center border-b">
+      <!-- header -->
+      <div
+        class="md:p-4 md:border-r-2 border-slate-200 md:m-4 border-b pb-1 md:border-b-0"
+      >
         <h1 class="text-2xl font-bold">Trace & Log & Interactive Demo</h1>
         <p class="text-gray-600">
           Interactive distributed tracing and logging analysis
         </p>
       </div>
-      <div class="flex gap-4 items-center">
+
+      <!-- traceid selectbox -->
+      <div class="md:flex gap-4 items-center">
         <!-- Trace History Dropdown -->
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-1 md:gap-2">
           <p class="text-sm font-medium">Trace / Log History</p>
           <Select.Root
             value={selectedTraceId || undefined}
@@ -331,14 +371,14 @@
           </Select.Root>
           <div class="text-xs text-gray-600">{currentTraceSpans[0]._time}</div>
         </div>
+      </div>
 
-        <!-- Scraping Status and Control -->
-        <div class="flex flex-col gap-2">
-          <p class="text-sm font-medium">Scraping Status</p>
-          <div class="flex gap-3 items-center">
-            <div class="text-sm text-gray-600">
-              Last run: {lastScrapingTime}
-            </div>
+      <!-- Scraping Status and Control -->
+      <div class="flex flex-col gap-2">
+        <p class="text-sm font-medium">Scraping Status</p>
+        <div class="flex gap-3 items-center">
+          <div class="text-sm text-gray-600">
+            Last run: {lastScrapingTime}
           </div>
         </div>
       </div>
@@ -350,7 +390,10 @@
         <TabsTrigger value="logs">Logs</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="traces" class="flex flex-1 h-full min-h-0 gap-4">
+      <TabsContent
+        value="traces"
+        class="grid lg:grid-cols-[70%_30%] h-full min-h-0 gap-4 w-full"
+      >
         <!-- Left Column -->
         <div class="flex-1">
           <Card class="h-full flex flex-col">
@@ -393,7 +436,7 @@
         </div>
 
         <!-- Right Column -->
-        <Card class="w-96 bg-white p-4 flex flex-col">
+        <Card class="w-full p-4 flex flex-col">
           {#if selectedSpan}
             <CardHeader class="mt-2 flex-shrink-0 px-1">
               <CardTitle>Selected Trace Data</CardTitle>
@@ -406,10 +449,10 @@
               </CardDescription>
             </CardHeader>
             <CardContent
-              class="flex-1 min-h-0 overflow-y-auto space-y-2 max-h-[572px] px-0"
+              class="flex-1 min-h-0 overflow-y-auto space-y-2 max-h-[572px] px-0 items-center justify-center mx-auto w-full"
             >
               {#each Object.entries(selectedSpan) as [key, value]}
-                <div class="border rounded px-3 py-1 bg-gray-50">
+                <div class="border rounded px-3 py-1">
                   <div
                     class="font-mono text-xs font-semibold text-blue-700 mb-1"
                   >
@@ -508,5 +551,3 @@
     </Tabs>
   </div>
 </div>
-
-<!-- Scraping Confirmation Dialog -->
