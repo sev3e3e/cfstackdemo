@@ -1,0 +1,39 @@
+# 依存モジュール
+**/node_modules
+
+# ビルド成果物
+**/dist
+**/build
+**/coverage
+**/*.min.js
+**/*.bundle.js
+
+# 環境ごとの一時ファイル
+*.log
+*.cache
+*.tmp
+
+# パッケージマネージャのロックファイル
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 環境構築系
+.env
+.env.*.local
+
+# 出力される型定義や生成コード
+*.d.ts
+
+# ドキュメント出力・静的ファイル
+.out
+.next
+.cache
+public/*
+
+**/.wrangler/**/*
+
+# frontend
+frontend/.svelte-kit/**/*
+
+drizzle/**/*

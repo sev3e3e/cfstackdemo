@@ -12,7 +12,6 @@ import globals from "globals";
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.strict,
-  tseslint.configs.stylistic,
   {
     languageOptions: {
       globals: {
