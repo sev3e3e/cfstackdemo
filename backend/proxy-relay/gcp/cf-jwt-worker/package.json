@@ -9,7 +9,6 @@
 		"deploy": "wrangler deploy --minify -e production --keep-vars",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
-		"test": "vitest --watch=false",
 		"cf-typegen": "wrangler types",
 		"db:gen": "drizzle-kit generate",
 		"db:mig-local": "wrangler d1 migrations apply cfstackdemo-jwt-d1 --local",

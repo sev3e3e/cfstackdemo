@@ -6,7 +6,6 @@
 		"deploy": "wrangler deploy --minify -e production --keep-vars",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
-		"test": "vitest --watch=false",
 		"cf-typegen": "wrangler types"
 	},
 	"exports": {
