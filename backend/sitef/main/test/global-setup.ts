@@ -5,15 +5,22 @@ import path from 'node:path';
 export default function () {
 	let label = 'Built main-d1 worker';
 	console.time(label);
-	childProcess.execSync('wrangler build -c ./wrangler.dev.jsonc', {
+	childProcess.execSync('wrangler build -c ./wrangler.jsonc', {
 		cwd: path.join(__dirname, '../../../main-d1'),
 	});
 	console.timeEnd(label);
 
 	label = 'Built main-r2 worker';
 	console.time(label);
-	childProcess.execSync('wrangler build -c ./wrangler.dev.jsonc', {
+	childProcess.execSync('wrangler build -c ./wrangler.jsonc', {
 		cwd: path.join(__dirname, '../../../main-r2'),
+	});
+	console.timeEnd(label);
+
+	label = 'Built sitef-fetcher worker';
+	console.time(label);
+	childProcess.execSync('wrangler build -c ./wrangler.jsonc', {
+		cwd: path.join(__dirname, '../../fetcher'),
 	});
 	console.timeEnd(label);
 }
