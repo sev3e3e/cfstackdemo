@@ -12,8 +12,6 @@
 		"check:format": "prettier . --check --ignore-unknown",
 		"check:types": "tsc --noEmit",
 		"watch": "tsc --watch",
-		"test": "vitest --watch=false",
-		"test:dev": "vitest",
 		"build": "tsc --build"
 	},
 	"devDependencies": {

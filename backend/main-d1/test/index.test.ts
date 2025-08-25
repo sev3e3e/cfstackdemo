@@ -5,6 +5,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { eq, count } from 'drizzle-orm';
 import * as schema from '../src/schema';
 import { CreateCommonDepsFromEnv, InsertAllDataInput, MainD1CommonDep, saveAll } from '../src/index';
+import { NoopLogger } from '@cfstackdemo/logger';
 
 describe('saveAll D1 Relations Test', () => {
 	let deps: MainD1CommonDep;
@@ -15,6 +16,7 @@ describe('saveAll D1 Relations Test', () => {
 			ENVIRONMENT: 'test' as const,
 		};
 		deps = await CreateCommonDepsFromEnv(newEnv);
+		deps.logger = new NoopLogger();
 	});
 	beforeEach(async () => {
 		// service = new TestSaveAllService(env);
@@ -188,7 +190,7 @@ describe('saveAll D1 Relations Test', () => {
       LEFT JOIN reviewers rv ON r.reviewer_id = rv.id
       LEFT JOIN samples sam ON i.id = sam.item_id
       WHERE i.id = ?
-    `
+    `,
 			)
 				.bind(1)
 				.all();
@@ -269,7 +271,7 @@ describe('saveAll D1 Relations Test', () => {
 				saveAll(deps, {
 					data: testData,
 					otelContext: { parentSpanId: '', parentTraceId: '' },
-				})
+				}),
 			).rejects.toThrow();
 
 			// データベースにゴミデータが残っていないことを確認
@@ -348,7 +350,7 @@ describe('saveAll D1 Relations Test', () => {
 				saveAll(deps, {
 					data: testData,
 					otelContext: { parentSpanId: '', parentTraceId: '' },
-				})
+				}),
 			).resolves.not.toThrow();
 
 			// データが正しく保存されていることを確認
@@ -449,7 +451,7 @@ describe('saveAll D1 Relations Test', () => {
 				saveAll(deps, {
 					data: testData,
 					otelContext: { parentSpanId: '', parentTraceId: '' },
-				})
+				}),
 			).resolves.not.toThrow();
 
 			// データが正しく保存され、reviewsテーブルが削除されていないことを確認
@@ -638,7 +640,7 @@ describe('saveAll D1 Relations Test', () => {
 				saveAll(deps, {
 					data: testData,
 					otelContext: { parentSpanId: '', parentTraceId: '' },
-				})
+				}),
 			).resolves.not.toThrow();
 
 			const reviews = await db.select().from(schema.reviews).where(eq(schema.reviews.itemId, 1)).all();

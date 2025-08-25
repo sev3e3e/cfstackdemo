@@ -76,9 +76,7 @@ OpenTelemetry
 
 テストを書いているpackage
 
-- [jwt-worker (jwt cache wrapper worker)](backend/proxy-relay/gcp/cf-jwt-worker/test)
 - [sitef-entrypoint](backend/sitef/entrypoint/test)
-- [sitef-fetcher](backend/sitef/fetcher/test)
 - [sitef-main](backend/sitef/main/test)
 - [sitef-scraper](backend/sitef/scraper/test)
 - [main-r2](backend/main-r2/test)
