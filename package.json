@@ -5,6 +5,8 @@
   "scripts": {
     "test:all": "pnpm --filter \"*\" test",
     "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "watch": "tsc --watch --noEmit",
     "dev": "pnpm --filter \"*\" dev:example",
     "deploy:all": "pnpm --filter \"*\" run deploy",
     "dev:proxy": "pnpm --filter '@cfstackdemo/gcp-request-relay' dev",
