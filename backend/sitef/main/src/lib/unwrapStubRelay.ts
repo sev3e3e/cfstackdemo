@@ -1,20 +1,24 @@
 import { RelaySitefFetcher } from '@cfstackdemo/sitef-fetcher';
 import { SitefFetcherLike } from '../interfaces';
-import { ResultAsync } from 'neverthrow';
+
+type OtelContext = {
+	traceId: string;
+	parentSpanId: string;
+};
 
 export class RelaySitefFetcherWrapper implements SitefFetcherLike {
 	constructor(private readonly stub: Rpc.Stub<RelaySitefFetcher>) {}
 
-	async FetchSaleFromHiddenAPI(count = 1) {
-		return ResultAsync.fromPromise(this.stub.FetchSaleFromHiddenAPI(count), (e) => e);
+	async FetchSaleFromHiddenAPI(otelContext: OtelContext, count = 1) {
+		return this.stub.FetchSaleFromHiddenAPI(otelContext, count);
 	}
 
-	async FetchFromItemAPI(props: { keyword: string; category: string; count: number; offset: number }) {
-		return ResultAsync.fromPromise(this.stub.FetchFromItemAPI(props), (e) => e);
+	async FetchFromItemAPI(otelContext: OtelContext, props: { keyword: string; category: string; count: number; offset: number }) {
+		return this.stub.FetchFromItemAPI(otelContext, props);
 	}
 
-	async fetchDetailPage(url: string) {
-		return ResultAsync.fromPromise(this.stub.fetchDetailPage(url), (e) => e);
+	async fetchDetailPage(otelContext: OtelContext, url: string) {
+		return this.stub.fetchDetailPage(otelContext, url);
 	}
 }
 

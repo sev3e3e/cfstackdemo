@@ -8,7 +8,7 @@
       "isBackground": true,
       "presentation": {
         "reveal": "always",
-        "revealProblems": "onProblem"
+        "revealProblems": "never"
       }
     }
   ]
