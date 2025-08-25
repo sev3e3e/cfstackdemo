@@ -4,6 +4,11 @@
   "description": "ola!",
   "scripts": {
     "test:all": "pnpm --filter \"*\" test",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "watch": "tsc --watch --noEmit",
     "dev": "pnpm --filter \"*\" dev:example",
     "deploy:all": "pnpm --filter \"*\" run deploy",
     "dev:proxy": "pnpm --filter '@cfstackdemo/gcp-request-relay' dev",
@@ -22,10 +27,18 @@
     "@cfstackdemo/types": "workspace:*",
     "@cloudflare/vitest-pool-workers": "catalog:",
     "@cloudflare/workers-types": "catalog:",
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-only-warn": "^1.1.0",
+    "eslint-plugin-svelte": "^3.11.0",
+    "eslint-plugin-tailwindcss": "4.0.0-beta.0",
+    "globals": "^16.3.0",
+    "npm-run-all2": "catalog:",
+    "prettier": "catalog:",
     "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
     "vitest": "catalog:",
-    "wrangler": "catalog:",
-    "npm-run-all2": "catalog:"
+    "wrangler": "catalog:"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
