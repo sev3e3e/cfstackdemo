@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "frontend",
+    "backend/**/*",
+    "lightweight-otel-sdk",
+    "logger",
+    "utility",
+    "types"
+  ],
+  "exclude": []
+}
