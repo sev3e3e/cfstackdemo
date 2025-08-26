@@ -567,6 +567,7 @@ async function getItems(
 							},
 							offset: params.from,
 							limit: params.count,
+							orderBy: (items, { desc }) => [desc(items.id)],
 						}),
 					(e) => {
 						const error = e as Error;

@@ -3,17 +3,21 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import { Badge } from "$lib/components/ui/badge/index.js";
   import * as Avatar from "$lib/components/ui/avatar/index.js";
-  import { Skeleton } from "$lib/components/ui/skeleton/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
+  import { ArrowLeft } from "@lucide/svelte";
+  import { page } from "$app/state";
+  import { currentPage } from "$lib/stores/pagestore";
+
+  $effect(() => {
+    const p = Number(page.url.searchParams.get("page") ?? 1);
+    currentPage.set(p);
+  });
 
   let { data }: { data: PageData } = $props();
 
-  console.log(data.pagination);
-
   function goToPage(newPage: number) {
-    const url = new URL($page.url);
+    const url = new URL(page.url);
     url.searchParams.set("page", newPage.toString());
     goto(url);
   }
@@ -25,11 +29,13 @@
   }
 
   function nextPage() {
-    console.log("huh?");
     if (data.pagination.hasMore) {
-      console.log("hello?");
       goToPage(data.pagination.page + 1);
     }
+  }
+
+  function smartBack() {
+    goto("/");
   }
 </script>
 
@@ -38,6 +44,14 @@
 </svelte:head>
 
 <div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <!-- <Button variant="outline" size="sm" onclick={smartBack}>
+      <ArrowLeft />Back to Home
+    </Button> -->
+    <Button variant="outline" size="sm" href="/">
+      <ArrowLeft />Back to Home
+    </Button>
+  </div>
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Items</h1>
     <p class="text-gray-600 dark:text-gray-400">
@@ -166,7 +180,6 @@
           <Card.Footer>
             <a
               href={`/items/${item.siteId}/${item.siteSpecificId}`}
-              target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
             >

@@ -1,7 +1,4 @@
 import type { PageServerLoad } from "./$types";
-// import traceData from "../trace.json";
-// import logData from "../log.json";
-// import traceHistoryData from "../tracehistory.json";
 import { fetchEventsByMessage } from "$lib/axiom";
 
 export const load: PageServerLoad = async ({ platform }) => {
@@ -34,24 +31,24 @@ export const load: PageServerLoad = async ({ platform }) => {
   // 初期データとして最初のtrace, logのみ取得する
   const traceQuery = `['cfstackdemo-trace'] | where ['trace_id'] =~ '${traceHistoryData[0].trace_id}'`;
 
-  const traceRows = await fetchEventsByMessage(
+  const traceRows = fetchEventsByMessage(
     { token: platform?.env.AXIOM_API_TOKEN },
     { apl: traceQuery }
   );
-  const traceData = traceRows.map(removeNulls);
+  // const traceData = traceRows.map(removeNulls);
 
   // log
   const logQuery = `['cfstackdemo-log'] | where ['fields.traceId'] =~ '${traceHistoryData[0].trace_id}'`;
 
-  const logRows = await fetchEventsByMessage(
+  const logRows = fetchEventsByMessage(
     { token: platform?.env.AXIOM_API_TOKEN },
     { apl: logQuery }
   );
-  const logData = logRows.map(removeNulls);
+  // const logData = logRows.map(removeNulls);
 
   return {
-    traceData,
-    logData,
+    traceData: traceRows.then(removeNulls),
+    logData: logRows.then(removeNulls),
     traceHistoryData,
   };
 

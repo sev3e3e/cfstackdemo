@@ -6,6 +6,9 @@
   "vars": {
     "ENVIRONMENT": "development"
   },
+  "dev": {
+    "port": 9999
+  },
   "env": {
     "production": {
       "name": "cfstackdemo-mock-web-server",
