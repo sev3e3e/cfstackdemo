@@ -19,7 +19,9 @@
     "dev:d1": "pnpm --filter '@cfstackdemo/main-d1' dev",
     "dev:frontend_unstable": "pnpm --filter '@cfstackdemo/frontend' _dev"
   },
-  "keywords": [],
+  "keywords": [
+    
+  ],
   "author": "",
   "license": "UNLICENSED",
   "packageManager": "pnpm@10.13.1",
